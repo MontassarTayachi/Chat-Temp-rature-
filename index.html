@@ -1,0 +1,612 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat Température - Application Mobile Intelligente</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: linear-gradient(135deg, #ff6b6b 0%, #4ecdc4 50%, #45b7d1 100%);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .language-toggle {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+            display: flex;
+            gap: 10px;
+        }
+
+        .lang-btn {
+            padding: 8px 16px;
+            border: 2px solid #fff;
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            cursor: pointer;
+            border-radius: 25px;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+            font-weight: 500;
+        }
+
+        .lang-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-2px);
+        }
+
+        .lang-btn.active {
+            background: rgba(255, 255, 255, 0.9);
+            color: #ff6b6b;
+        }
+
+        .hero-section {
+            text-align: center;
+            padding: 4rem 0;
+            margin-bottom: 3rem;
+            position: relative;
+        }
+
+        .hero-title {
+            font-size: 4rem;
+            font-weight: 800;
+            color: white;
+            margin-bottom: 1rem;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+            animation: fadeInUp 1s ease-out;
+            background: linear-gradient(45deg, #fff, #f0f0f0);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .hero-subtitle {
+            font-size: 1.4rem;
+            color: rgba(255, 255, 255, 0.9);
+            margin-bottom: 2rem;
+            animation: fadeInUp 1s ease-out 0.2s both;
+            font-weight: 300;
+        }
+
+        .weather-icon {
+            font-size: 3rem;
+            margin: 0 1rem;
+            animation: float 3s ease-in-out infinite;
+        }
+
+        .project-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 25px;
+            padding: 3rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 25px 50px rgba(0,0,0,0.15);
+            animation: fadeInUp 1s ease-out 0.4s both;
+            transition: all 0.3s ease;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .project-card:hover {
+            transform: translateY(-15px);
+            box-shadow: 0 35px 70px rgba(0,0,0,0.2);
+        }
+
+        .section-title {
+            font-size: 2.5rem;
+            color: #ff6b6b;
+            margin-bottom: 1.5rem;
+            position: relative;
+            padding-bottom: 0.5rem;
+            font-weight: 700;
+        }
+
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 80px;
+            height: 4px;
+            background: linear-gradient(90deg, #ff6b6b, #4ecdc4);
+            border-radius: 2px;
+        }
+
+        .description {
+            font-size: 1.2rem;
+            line-height: 1.8;
+            margin-bottom: 2rem;
+            color: #555;
+            text-align: justify;
+        }
+
+        .tech-stack {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin: 2.5rem 0;
+        }
+
+        .tech-tag {
+            background: linear-gradient(45deg, #ff6b6b, #4ecdc4);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 25px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+            transition: all 0.3s ease;
+        }
+
+        .tech-tag:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+        }
+
+        .image-container {
+            margin: 3rem 0;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.25);
+            background: linear-gradient(45deg, #ff6b6b, #4ecdc4);
+            padding: 20px;
+        }
+
+        .project-image {
+            width: 100%;
+            max-width: 600px;
+            height: auto;
+            border-radius: 15px;
+            transition: transform 0.3s ease;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+        }
+
+        .project-image:hover {
+            transform: scale(1.05);
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 2rem;
+            margin: 3rem 0;
+        }
+
+        .feature-card {
+            background: rgba(255, 255, 255, 0.8);
+            padding: 2.5rem;
+            border-radius: 20px;
+            border-left: 5px solid #ff6b6b;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .feature-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(45deg, rgba(255,107,107,0.05), rgba(78,205,196,0.05));
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .feature-card:hover::before {
+            opacity: 1;
+        }
+
+        .feature-card:hover {
+            background: rgba(255, 255, 255, 0.95);
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(0,0,0,0.1);
+        }
+
+        .feature-icon {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            color: #ff6b6b;
+        }
+
+        .feature-title {
+            font-size: 1.4rem;
+            color: #ff6b6b;
+            margin-bottom: 1rem;
+            font-weight: 700;
+        }
+
+        .feature-description {
+            color: #666;
+            line-height: 1.6;
+        }
+
+        .highlight-section {
+            background: linear-gradient(135deg, rgba(255,107,107,0.1), rgba(78,205,196,0.1));
+            border-radius: 20px;
+            padding: 3rem;
+            margin: 3rem 0;
+            border: 2px solid rgba(255,107,107,0.2);
+        }
+
+        .highlight-title {
+            font-size: 1.8rem;
+            color: #ff6b6b;
+            margin-bottom: 1rem;
+            font-weight: 600;
+        }
+
+        .cta-section {
+            text-align: center;
+            padding: 4rem;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 25px;
+            margin-top: 3rem;
+            backdrop-filter: blur(10px);
+        }
+
+        .cta-title {
+            font-size: 2rem;
+            color: white;
+            margin-bottom: 1.5rem;
+            font-weight: 600;
+        }
+
+        .cta-button {
+            display: inline-block;
+            padding: 18px 40px;
+            background: linear-gradient(45deg, #ff6b6b, #4ecdc4);
+            color: white;
+            text-decoration: none;
+            border-radius: 35px;
+            font-weight: 700;
+            font-size: 1.1rem;
+            transition: all 0.3s ease;
+            box-shadow: 0 15px 30px rgba(0,0,0,0.2);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .cta-button:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-20px); }
+        }
+
+        @media (max-width: 768px) {
+            .hero-title {
+                font-size: 2.8rem;
+            }
+            
+            .project-card {
+                padding: 2rem;
+            }
+            
+            .container {
+                padding: 1rem;
+            }
+
+            .features-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .app-preview {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 2rem 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="language-toggle">
+        <button class="lang-btn active" onclick="switchLanguage('fr')">FR</button>
+        <button class="lang-btn" onclick="switchLanguage('en')">EN</button>
+    </div>
+
+    <div class="container">
+        <!-- Contenu Français -->
+        <div id="content-fr">
+            <div class="hero-section">
+                <h1 class="hero-title">
+                    <span class="weather-icon">🌤️</span>
+                    Chat Température
+                    <span class="weather-icon">💬</span>
+                </h1>
+                <p class="hero-subtitle">Application Mobile Météo Intelligente avec Chatbot IA</p>
+            </div>
+
+            <div class="project-card">
+                <h2 class="section-title">🚀 À Propos de l'Application</h2>
+                <p class="description">
+                    Cette application fournit instantanément la température actuelle et les horaires de prière du jour. 
+                    Ce qui la distingue est l'intégration d'un chatbot alimenté par l'API GPT, permettant aux utilisateurs 
+                    de poser des questions contextuelles sur la météo. Une expérience météorologique interactive, 
+                    fluide et intelligente, le tout dans le creuset de Flutter.
+                </p>
+                
+                <div class="tech-stack">
+                    <span class="tech-tag">Flutter</span>
+                    <span class="tech-tag">GPT API</span>
+                    <span class="tech-tag">Weather API</span>
+                    <span class="tech-tag">Dart</span>
+                    <span class="tech-tag">Mobile Development</span>
+                    <span class="tech-tag">AI Integration</span>
+                </div>
+
+                <div class="highlight-section">
+                    <h3 class="highlight-title">🤖 Innovation Clé</h3>
+                    <p>L'intégration d'un chatbot IA transforme une simple application météo en assistant personnel intelligent, 
+                    capable de répondre à des questions complexes sur les conditions météorologiques et d'offrir des conseils personnalisés.</p>
+                </div>
+            </div>
+
+            <div class="project-card">
+                <h2 class="section-title">✨ Fonctionnalités Principales</h2>
+                <div class="features-grid">
+                    <div class="feature-card">
+                        <div class="feature-icon">🌡️</div>
+                        <h3 class="feature-title">Température en Temps Réel</h3>
+                        <p class="feature-description">
+                            Données météorologiques précises et actualisées en permanence pour votre localisation.
+                        </p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">🕌</div>
+                        <h3 class="feature-title">Horaires de Prière</h3>
+                        <p class="feature-description">
+                            Intégration des horaires de prière quotidiens, calculés selon votre position géographique.
+                        </p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">🤖</div>
+                        <h3 class="feature-title">Chatbot IA Intégré</h3>
+                        <p class="feature-description">
+                            Assistant intelligent alimenté par GPT pour répondre à toutes vos questions météorologiques.
+                        </p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">💬</div>
+                        <h3 class="feature-title">Questions Contextuelles</h3>
+                        <p class="feature-description">
+                            Posez des questions naturelles sur la météo et obtenez des réponses personnalisées et détaillées.
+                        </p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">📱</div>
+                        <h3 class="feature-title">Interface Flutter</h3>
+                        <p class="feature-description">
+                            Design moderne et fluide développé avec Flutter pour une expérience utilisateur optimale.
+                        </p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">⚡</div>
+                        <h3 class="feature-title">Performance Optimisée</h3>
+                        <p class="feature-description">
+                            Application rapide et réactive avec des temps de réponse minimaux pour toutes les fonctionnalités.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="project-card">
+                <h2 class="section-title">📱 Aperçu de l'Application</h2>
+                <div class="image-container">
+                    <img src="https://github.com/MontassarTayachi/Chat-Temp-rature-/assets/132301258/e40d784d-49c4-401a-9f57-85c96e7b5557" 
+                         alt="Capture d'écran de l'application Chat Température" 
+                         class="project-image">
+                </div>
+                <p class="description">
+                    L'interface utilisateur combine élégance et fonctionnalité, offrant un accès instantané aux informations 
+                    météorologiques tout en intégrant de manière transparente les capacités conversationnelles de l'IA.
+                </p>
+            </div>
+
+            <div class="cta-section">
+                <h2 class="cta-title">Découvrir Plus de Projets</h2>
+                <a href="#" class="cta-button">Explorer le Portfolio</a>
+            </div>
+        </div>
+
+        <!-- Contenu Anglais -->
+        <div id="content-en" class="hidden">
+            <div class="hero-section">
+                <h1 class="hero-title">
+                    <span class="weather-icon">🌤️</span>
+                    Chat Temperature
+                    <span class="weather-icon">💬</span>
+                </h1>
+                <p class="hero-subtitle">Intelligent Weather Mobile App with AI Chatbot</p>
+            </div>
+
+            <div class="project-card">
+                <h2 class="section-title">🚀 About the Application</h2>
+                <p class="description">
+                    This application instantly provides the current temperature and daily prayer times. 
+                    What sets it apart is the integration of a chatbot powered by the GPT API, allowing users 
+                    to ask contextual questions about the weather. An interactive, smooth, and intelligent 
+                    weather experience, all built with Flutter.
+                </p>
+                
+                <div class="tech-stack">
+                    <span class="tech-tag">Flutter</span>
+                    <span class="tech-tag">GPT API</span>
+                    <span class="tech-tag">Weather API</span>
+                    <span class="tech-tag">Dart</span>
+                    <span class="tech-tag">Mobile Development</span>
+                    <span class="tech-tag">AI Integration</span>
+                </div>
+
+                <div class="highlight-section">
+                    <h3 class="highlight-title">🤖 Key Innovation</h3>
+                    <p>The integration of an AI chatbot transforms a simple weather app into an intelligent personal assistant, 
+                    capable of answering complex questions about weather conditions and offering personalized advice.</p>
+                </div>
+            </div>
+
+            <div class="project-card">
+                <h2 class="section-title">✨ Key Features</h2>
+                <div class="features-grid">
+                    <div class="feature-card">
+                        <div class="feature-icon">🌡️</div>
+                        <h3 class="feature-title">Real-Time Temperature</h3>
+                        <p class="feature-description">
+                            Accurate weather data continuously updated for your location.
+                        </p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">🕌</div>
+                        <h3 class="feature-title">Prayer Times</h3>
+                        <p class="feature-description">
+                            Integration of daily prayer schedules, calculated according to your geographical position.
+                        </p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">🤖</div>
+                        <h3 class="feature-title">Integrated AI Chatbot</h3>
+                        <p class="feature-description">
+                            Intelligent assistant powered by GPT to answer all your weather-related questions.
+                        </p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">💬</div>
+                        <h3 class="feature-title">Contextual Questions</h3>
+                        <p class="feature-description">
+                            Ask natural questions about the weather and get personalized and detailed answers.
+                        </p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">📱</div>
+                        <h3 class="feature-title">Flutter Interface</h3>
+                        <p class="feature-description">
+                            Modern and smooth design developed with Flutter for an optimal user experience.
+                        </p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">⚡</div>
+                        <h3 class="feature-title">Optimized Performance</h3>
+                        <p class="feature-description">
+                            Fast and responsive application with minimal response times for all features.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="project-card">
+                <h2 class="section-title">📱 Application Preview</h2>
+                <div class="image-container">
+                    <img src="https://github.com/MontassarTayachi/Chat-Temp-rature-/assets/132301258/e40d784d-49c4-401a-9f57-85c96e7b5557" 
+                         alt="Screenshot of Chat Temperature application" 
+                         class="project-image">
+                </div>
+                <p class="description">
+                    The user interface combines elegance and functionality, providing instant access to weather 
+                    information while seamlessly integrating AI conversational capabilities.
+                </p>
+            </div>
+
+            <div class="cta-section">
+                <h2 class="cta-title">Discover More Projects</h2>
+                <a href="#" class="cta-button">Explore Portfolio</a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function switchLanguage(lang) {
+            const frContent = document.getElementById('content-fr');
+            const enContent = document.getElementById('content-en');
+            const langButtons = document.querySelectorAll('.lang-btn');
+
+            // Supprimer la classe active de tous les boutons
+            langButtons.forEach(btn => btn.classList.remove('active'));
+
+            if (lang === 'fr') {
+                frContent.classList.remove('hidden');
+                enContent.classList.add('hidden');
+                document.querySelector('[onclick="switchLanguage(\'fr\')"]').classList.add('active');
+                document.documentElement.lang = 'fr';
+            } else {
+                enContent.classList.remove('hidden');
+                frContent.classList.add('hidden');
+                document.querySelector('[onclick="switchLanguage(\'en\')"]').classList.add('active');
+                document.documentElement.lang = 'en';
+            }
+        }
+
+        // Animation au chargement
+        window.addEventListener('load', function() {
+            document.body.style.opacity = '0';
+            document.body.style.transition = 'opacity 0.5s ease-in-out';
+            setTimeout(() => {
+                document.body.style.opacity = '1';
+            }, 100);
+        });
+
+        // Animation des éléments au scroll
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.opacity = '1';
+                    entry.target.style.transform = 'translateY(0)';
+                }
+            });
+        }, observerOptions);
+
+        // Observer tous les éléments avec animation
+        document.addEventListener('DOMContentLoaded', () => {
+            const animatedElements = document.querySelectorAll('.feature-card, .project-card');
+            animatedElements.forEach(el => {
+                el.style.opacity = '0';
+                el.style.transform = 'translateY(30px)';
+                el.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+                observer.observe(el);
+            });
+        });
+    </script>
+</body>
+</html>
